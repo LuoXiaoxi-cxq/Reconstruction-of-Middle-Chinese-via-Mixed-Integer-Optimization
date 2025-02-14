@@ -1,0 +1,5 @@
+*.sol
+*.sh
+result/
+synthetic/data/
+synthetic/result/
