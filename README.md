@@ -16,7 +16,7 @@ To successfully run the code, in addition to the above-listed packages, you will
 ### Experiments with synthetic data
 To generate synthetic data, run:
 ```shell
-python -m synthetic.synthetic_dataset -p_fq 0.3 -p_dia 0.3 fqp_char 0.3 -phon Latin  # generate data
+python -m synthetic.synthetic_dataset -p_fq 0.3 -p_dia 0.3 p_char 0.3 -phon Latin  # generate data
 ```
 This command will set `file_name` to `fq_0.3_dia_0.3_char_0.3_phon_Latin`, and generate corresponding 
 `fq_{file_name}.xlsx` and `dia_{file_name}.xlsx` files for character-speller pairs and variations.
