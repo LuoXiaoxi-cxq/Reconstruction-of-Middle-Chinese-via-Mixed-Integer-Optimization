@@ -35,6 +35,7 @@ class Sampler:
         self.initial_num = None  # number of initials
         self.medial_num = None  # number of medials
 
+        # only use consonants, discard vowels
         self.ini_IPA = self.all_IPA.loc[(self.all_IPA['sonority'] <= 4) & (self.all_IPA['sonority'] >= 1)]
         self.ini_IPA.insert(0, column='con_index', value=range(len(self.ini_IPA)))
 
@@ -285,11 +286,11 @@ class CharSet:
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
-    parser.add_argument('--p_fq_violate', '-p_fq', type=float, default=0.05,
+    parser.add_argument('--p_fq_violate', '-p_fq', type=float, default=0.1,
                         help='the portion of fanqie whose initial and upperspeller are in different categories')
-    parser.add_argument('--dia_ini_p', '-p_dia', type=float, default=0.2,
+    parser.add_argument('--dia_ini_p', '-p_dia', type=float, default=0.7,
                         help='the portion of initials that are regularly changed in dialects')
-    parser.add_argument('--char_ini_p', '-p_char', type=float, default=0.2,
+    parser.add_argument('--char_ini_p', '-p_char', type=float, default=0.7,
                         help='the portion of chars that are irregularly changed in dialects')
     parser.add_argument('--if_gauss', '-gauss', type=bool, default=True,
                         help='whether to add gaussian noise when generating dialects')
@@ -298,7 +299,9 @@ if __name__ == "__main__":
     parser.add_argument('--gauss_var', '-sigma', type=float, default=1,
                         help='the deviance of gaussian noise on dialect initials (sqrt of variance)')
     parser.add_argument('--phon', '-phon', type=str, default='Latin',
-                        help='Latin/Chinese/German/English')
+                        choices=['random', 'Latin', 'Chinese', 'German', 'English'],
+                        help='the consonant system to base on. Random: the system is '
+                             'randomly selected and is not based on a real language')
     args = vars(parser.parse_args())
     print("args: ", args)
 
@@ -310,10 +313,10 @@ if __name__ == "__main__":
     Path('synthetic/data/').mkdir(exist_ok=True, parents=True)
 
     if args['phon'] == 'random':
-        print('random')
+        print('Use a random consonant system')
         sampler = Sampler(file_pth=file_name)
     else:
-        print(args['phon'])
+        print('Use a consonant system based on', args['phon'])
         sampler = Prechosen_Sampler(file_pth=file_name, ini_file_name=('data/synthetic/language.xlsx', args['phon']))
     sampler.sample_initial()
     sampler.sample_medial()

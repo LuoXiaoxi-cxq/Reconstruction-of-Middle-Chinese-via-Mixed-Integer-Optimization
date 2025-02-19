@@ -54,7 +54,7 @@ def major_vote(char_dict: dict, choice='IPA') -> list or (list, int):
     choice='feature': for each feature, choose value with highest frequency across dialects.
     """
     assert choice in ["IPA", "feature"]
-    df_gt = pd.read_excel(f"data/1960_2661_gt.xlsx")
+    df_gt = pd.read_excel(f"data/our_charset_gt.xlsx")
     gy_char_ls = list()
 
     for i in range(len(df_gt)):

@@ -83,7 +83,7 @@ class CharacterSet:
         with open(f'data/char_1960_2661.pickle', 'rb') as f2:
             self.char_set = pickle.load(f2)
 
-        df_gy = pd.read_excel("data/Guangyun.xlsx", sheet_name='合并挑选替换重纽3_gyidx')
+        df_gy = pd.read_excel("data/Guangyun.xlsx")
         self.df_gy = df_gy[df_gy['字頭'].isin(self.char_set)]
         self.verify_flag = [False] * len(self.df_gy)  # for evaluation
 
@@ -333,19 +333,20 @@ class CharacterSet:
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
     parser.add_argument('--fq_medial_weight', '-fqmw', type=int, default=3,
-                        help='the weight of fanqie notations with the same medial in the objective function')
-    parser.add_argument('--fanqie_weight', '-w', type=int, default=20,  # can chsange to 5, 10, 50, ...
+                        help='weight assigned to Fanqie spellings (X, X_u) that satisfy X and X_u sharing the same medial')
+    parser.add_argument('--fanqie_weight', '-w', type=int, default=20,
                         help='the weight of Fanqie in the objective function')
     parser.add_argument('--fanqie', '-fq', type=bool, default=True,
-                        help='whether the constraints and objective terms of Fanqie will be included')
+                        help='Whether to include Fanqie information in modeling.')
     parser.add_argument('--yidu', '-yd', type=bool, default=True,
-                        help='whether the constraints and objective terms of Yidu will be included')
+                        help='Whether to include Yidu information in modeling.')
     parser.add_argument('--restrict', '-r', type=bool, default=True,
-                        help='whether the constraints and objective terms about values of variables will be included')
+                        help='whether constraints designed to obtain a proper phonetic feature vector are incorporated into the model.')
     parser.add_argument('--verify_p', '-vp', type=float, default=0.3,
-                        help=' a portion of verify_p categorical information is used for verification')
+                        help='Portion of held-out data used for evaluation.')
     parser.add_argument('--sol', '-sol', type=str, default='',
-                        help='path to the pre-solved solutions')
+                        help='Path to pre-solved solutions. If you have previously run experiments and saved the solutions,'
+                             ' use this parameter to specify the path for loading them.')
 
     args = vars(parser.parse_args())
     file_name = arg2filename(key_dct={"fq_medial_weight": "fqmw", "fanqie_weight": "fqw",
@@ -360,9 +361,10 @@ if __name__ == "__main__":
     model.Params.NonConvex = 2
     model.Params.PoolSolutions = 1
     model.Params.MIPGap = 0.00001
-    # the place to save solution file
+    model.Params.TimeLimit = 36000
+    # place to save solution file in the optimization process.
+    # If you only want the final solution, comment the following line.
     model.Params.SolFiles = f'result/{file_name}/sol'
-    model.Params.TimeLimit = 72000
 
     Char_Set = CharacterSet()
     Char_Set.add_dialect()

@@ -217,22 +217,18 @@ def check_fq(data_name, arr_ans: np.array, best_labels: list):
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
-    parser.add_argument('--rand_p', '-rand_p', type=float, default=0,
-                        help='the portion of quadratic terms')
     parser.add_argument('--run_time', '-t', type=float, default=14400,
                         help='the time of experiment')
     parser.add_argument('--fq_medial_weight', '-fqmw', type=int, default=1,
-                        help='the weight of fanqie notations with the same medial in the objective function')
+                        help='weight assigned to Fanqie spellings (X, X_u) that satisfy X and X_u sharing the same medial')
     parser.add_argument('--fanqie_weight', '-w', type=int, default=20,
-                        help='the weight of Fanqie in the objective function')
+                        help='weight of synthetic Fanqie in the objective function')
     parser.add_argument('--fanqie', '-fq', type=bool, default=True,
-                        help='whether the constraints and objective terms of Fanqie will be included')
+                        help='whether synthetic Fanqie information will be included')
     parser.add_argument('--restrict', '-r', type=bool, default=True,
-                        help='whether the constraints and objective terms about values of variables will be included')
+                        help='whether constraints designed to obtain a proper phonetic feature vector are incorporated into the model.')
     parser.add_argument('--data_name', '-pth', type=str, default='fq_0.05_dia_0.2_char_0.2_phon_Latin',
-                        help='the place where phonology is generated')
-    parser.add_argument('--sol', '-sol', type=str, default='',
-                        help='the place where previous solution is saved')
+                        help='file name of the synthetic datasets')
 
     args = vars(parser.parse_args())
     print("args: ", args)
@@ -259,9 +255,6 @@ if __name__ == "__main__":
     model.setObjective(final_obj, GRB.MINIMIZE)
     model.update()
     print(model)
-
-    if args['sol']:
-        model.read(args['sol'])
 
     model.optimize()
     if model.status == GRB.Status.INFEASIBLE:
